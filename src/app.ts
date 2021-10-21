@@ -1,5 +1,7 @@
 import { Application } from 'express';
 import * as express from 'express';
+import { Controller } from './shared/interfaces/controller.interface';
+import { WeatherController } from './weather/weather.controller';
 
 class App {
   app: Application;
@@ -10,6 +12,7 @@ class App {
   async init() {
     this.initExpress();
     await this.connectDb();
+    this.initControllers([new WeatherController()]);
   }
 
   async connectDb(): Promise<any> {
@@ -20,7 +23,7 @@ class App {
     this.app = express();
   }
 
-  private initControllers(controllers: any[]) {
+  private initControllers(controllers: Controller[]) {
     controllers.forEach((controller) => {
       this.app.use('/', controller.router);
     });
