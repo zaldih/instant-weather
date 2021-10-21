@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import app from './app';
 
 const PORT = 1284;
