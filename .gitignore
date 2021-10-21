@@ -1,0 +1,6 @@
+node_modules
+data
+reports
+coverage
+docs/prueba.pdf
+.env
