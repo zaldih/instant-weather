@@ -10,5 +10,15 @@ export class WeatherController implements Controller {
     this.initRoutes();
   }
 
-  private initRoutes() {}
+  private initRoutes() {
+    this.router.get('/:lat/:lon', (req: Request, res: Response) => {
+      this.getWeather(req, res);
+    });
+  }
+
+  private async getWeather(req: Request, res: Response) {
+    const lat = +req.params.lat;
+    const lon = +req.params.lon;
+    res.send('ok');
+  }
 }
