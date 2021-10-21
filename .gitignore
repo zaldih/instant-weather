@@ -3,4 +3,5 @@ data
 reports
 coverage
 docs/prueba.pdf
+dist
 .env
