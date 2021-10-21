@@ -1,5 +1,5 @@
 import { plainToClass } from 'class-transformer';
-import { HttpService } from 'src/shared/services/http.service';
+import { HttpService } from '../shared/services/http.service';
 import { NoDataException } from './exceptions/no-data.exception';
 import Wheather from './weather.model';
 
