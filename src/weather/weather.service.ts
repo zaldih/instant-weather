@@ -26,9 +26,13 @@ export class WeatherService {
         throw new NoDataException();
       });
   }
-
-  getWetherFromCache(lat: number, lon: number): Promise<any> {
+  getWetherFromCache(lat: number, lon: number): Promise<Wheather> {
     console.log('CACHE');
-    return null;
+    const now = new Date().getTime();
+    return this.weatherRepository.findOne({
+      expirationDate: { $gte: now },
+      lat,
+      lon,
+    }) as Promise<any>;
   }
 }
