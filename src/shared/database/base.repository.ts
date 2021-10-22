@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, UpdateOptions } from 'mongodb';
 const db = require('./db.controller');
 export abstract class BaseRepository<T> {
   protected collection: Collection;
@@ -10,6 +10,18 @@ export abstract class BaseRepository<T> {
   insertOne(item: T) {
     return new Promise((resolve, reject) => {
       this.collection.insertOne(item, (err, res) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(res);
+      });
+    });
+  }
+
+  updateOne(where: Partial<T>, set: Partial<T>, options: UpdateOptions) {
+    return new Promise((resolve, reject) => {
+      this.collection.updateOne(where, { $set: set }, options, (err, res) => {
         if (err) {
           reject(err);
           return;
