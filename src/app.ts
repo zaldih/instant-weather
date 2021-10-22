@@ -3,6 +3,7 @@ import * as express from 'express';
 import { Controller } from './shared/interfaces/controller.interface';
 import { WeatherController } from './weather/weather.controller';
 import { HandleError } from './shared/handlers/exceptions.handler';
+const db = require('./shared/database/db.controller');
 
 class App {
   app: Application;
@@ -18,7 +19,7 @@ class App {
   }
 
   async connectDb(): Promise<any> {
-    return null;
+    return db.connect();
   }
 
   private initExpress() {
