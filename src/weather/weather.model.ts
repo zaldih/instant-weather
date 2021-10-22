@@ -1,3 +1,5 @@
+import { CACHE_TIME } from './weather.constants';
+
 export default class Wheather {
   timestamp: number;
   expirationDate: number;
@@ -19,8 +21,7 @@ export default class Wheather {
   isValid() {}
 
   private calculateExpiration(timestamp: number) {
-    const expirationMinutes = 3;
-    return this.addMinutes(timestamp, expirationMinutes);
+    return this.addMinutes(timestamp, CACHE_TIME);
   }
 
   // TODO move to other file
