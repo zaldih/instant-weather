@@ -17,9 +17,8 @@ export class WeatherService {
     const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,alerts&appid=${API_KEY}`;
     return this.http
       .get(url)
-      .then(async (response: { data: string }) => {
+      .then((response: { data: string }) => {
         const weather = plainToClass(Wheather, response.data);
-        await this.weatherRepository.insertOne(weather);
         return weather;
       })
       .catch((error: any) => {
@@ -34,5 +33,11 @@ export class WeatherService {
       lat,
       lon,
     }) as Promise<any>;
+  }
+
+  cacheWeather(weather: Wheather) {
+    const { lat, lon } = weather;
+    const options = { upsert: true };
+    return this.weatherRepository.updateOne({ lat, lon }, weather, options);
   }
 }
