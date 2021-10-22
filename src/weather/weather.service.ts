@@ -3,9 +3,13 @@ import { HttpService } from '../shared/services/http.service';
 import { NoDataException } from './exceptions/no-data.exception';
 import Wheather from './weather.model';
 import config from '../shared/config';
+import { WeatherRepository } from './weather.repository';
 
 export class WeatherService {
-  constructor(private http: HttpService = new HttpService()) {}
+  constructor(
+    private weatherRepository: WeatherRepository = new WeatherRepository(),
+    private http: HttpService = new HttpService(),
+  ) {}
 
   getWeather(lat: number, lon: number): Promise<any> {
     console.log('API');
@@ -13,8 +17,9 @@ export class WeatherService {
     const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,alerts&appid=${API_KEY}`;
     return this.http
       .get(url)
-      .then((response: { data: string }) => {
+      .then(async (response: { data: string }) => {
         const weather = plainToClass(Wheather, response.data);
+        await this.weatherRepository.insertOne(weather);
         return weather;
       })
       .catch((error: any) => {
