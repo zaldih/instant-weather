@@ -4,6 +4,7 @@ import { NoDataException } from './exceptions/no-data.exception';
 import Wheather from './weather.model';
 import config from '../shared/config';
 import { WeatherRepository } from './weather.repository';
+import { COORDINATES_MARGIN } from './weather.constants';
 
 export class WeatherService {
   constructor(
@@ -19,25 +20,38 @@ export class WeatherService {
       .get(url)
       .then((response: { data: string }) => {
         const weather = plainToClass(Wheather, response.data);
+        const { lat, lon } = response.data as any;
+        // TODO create plaintoclass transformer
+        weather.setCoordinates(lat, lon);
         return weather;
       })
       .catch((error: any) => {
         throw new NoDataException();
       });
   }
+
   getWetherFromCache(lat: number, lon: number): Promise<Wheather> {
     console.log('CACHE');
     const now = new Date().getTime();
     return this.weatherRepository.findOne({
       expirationDate: { $gte: now },
-      lat,
-      lon,
-    }) as Promise<any>;
+      location: {
+        $near: {
+          $geometry: { type: 'Point', coordinates: [lon, lat] },
+          $minDistance: 0,
+          $maxDistance: COORDINATES_MARGIN,
+        },
+      },
+    }) as Promise<Wheather>;
   }
 
   cacheWeather(weather: Wheather) {
-    const { lat, lon } = weather;
+    // const { lat, lon } = weather.location;
     const options = { upsert: true };
-    return this.weatherRepository.updateOne({ lat, lon }, weather, options);
+    return this.weatherRepository.updateOne(
+      { location: weather.location },
+      weather,
+      options,
+    );
   }
 }
