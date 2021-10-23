@@ -20,6 +20,12 @@ export class WeatherController implements Controller {
         await this.getWeather(req, res);
       }),
     );
+    this.router.get(
+      '/:lat/:lon/:hour',
+      asyncHandler(async (req: Request, res: Response) => {
+        // await this.getWeatherHourly(req, res);
+      }),
+    );
   }
 
   private async getWeather(req: Request, res: Response) {
