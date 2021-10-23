@@ -1,4 +1,10 @@
-import { Collection, Filter, UpdateOptions, Document } from 'mongodb';
+import {
+  Collection,
+  Filter,
+  UpdateOptions,
+  Document,
+  FindOptions,
+} from 'mongodb';
 const db = require('./db.controller');
 export abstract class BaseRepository<T> {
   protected collection: Collection;
@@ -31,9 +37,9 @@ export abstract class BaseRepository<T> {
     });
   }
 
-  findOne(query: Filter<Document>) {
+  findOne(query: Filter<Document>, options?: FindOptions) {
     return new Promise((resolve, reject) => {
-      this.collection.findOne(query, (err, result) => {
+      this.collection.findOne(query, options, (err, result) => {
         if (err) {
           reject(err);
           return;
