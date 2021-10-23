@@ -17,7 +17,7 @@ export class WeatherController implements Controller {
     this.router.get(
       '/:lat/:lon',
       asyncHandler(async (req: Request, res: Response) => {
-        this.getWeather(req, res);
+        await this.getWeather(req, res);
       }),
     );
   }
