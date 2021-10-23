@@ -27,6 +27,10 @@ export default class Wheather {
     this.location.coordinates = [lon, lat];
   }
 
+  isExpired() {
+    return new Date().getTime() > this.expirationDate;
+  }
+
   private calculateExpiration(timestamp: number) {
     return this.addMinutes(timestamp, CACHE_TIME);
   }

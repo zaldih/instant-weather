@@ -34,9 +34,7 @@ export class WeatherService {
 
   getWetherFromCache(lat: number, lon: number): Promise<Wheather> {
     console.log('CACHE');
-    const now = new Date().getTime();
     return this.weatherRepository.findOne({
-      expirationDate: { $gte: now },
       location: {
         $near: {
           $geometry: { type: 'Point', coordinates: [lon, lat] },
@@ -79,10 +77,8 @@ export class WeatherService {
   }
 
   getOneHourly(coordinates: Coordinates, timestamp: number) {
-    const now = new Date().getTime();
     return this.weatherRepository.findOne(
       {
-        expirationDate: { $gte: now },
         location: {
           $near: {
             $geometry: { type: 'Point', coordinates },

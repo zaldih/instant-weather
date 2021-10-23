@@ -67,7 +67,8 @@ export class WeatherController implements Controller {
     lon: number,
   ): Promise<Wheather> {
     let weather = await this.weatherService.getWetherFromCache(lat, lon);
-    if (!weather) {
+    const shouldUpdateCache = !weather || weather.isExpired();
+    if (shouldUpdateCache) {
       weather = await this.weatherService.getWeather(lat, lon);
       await this.weatherService.cacheWeather(weather);
     }
