@@ -1,24 +1,31 @@
+import {
+  Coordinates,
+  GeoJson,
+} from 'src/shared/interfaces/coordinates.interface';
 import { CACHE_TIME } from './weather.constants';
 
 export default class Wheather {
   timestamp: number;
   expirationDate: number;
-  lat: number;
-  lon: number;
+  location: GeoJson;
   hourly: any[];
   daily: any[];
 
-  constructor(lat: number, lon: number, hourly: any[], daily: any[]) {
+  constructor(coordinates: Coordinates, hourly: any[], daily: any[]) {
     const now = new Date().getTime();
     this.timestamp = now;
     this.expirationDate = this.calculateExpiration(now);
-    this.lat = lat;
-    this.lon = lon;
+    this.location = {
+      type: 'Point',
+      coordinates,
+    };
     this.hourly = hourly;
     this.daily = daily;
   }
 
-  isValid() {}
+  setCoordinates(lat: number, lon: number) {
+    this.location.coordinates = [lon, lat];
+  }
 
   private calculateExpiration(timestamp: number) {
     return this.addMinutes(timestamp, CACHE_TIME);

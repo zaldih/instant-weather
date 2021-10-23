@@ -8,6 +8,6 @@ export class WeatherRepository extends BaseRepository<Wheather> {
   }
 
   private createIndex() {
-    return this.collection.createIndex({ lat: 1, lon: 1 });
+    return this.collection.createIndex({ location: '2dsphere' });
   }
 }
