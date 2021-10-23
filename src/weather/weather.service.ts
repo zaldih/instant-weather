@@ -5,6 +5,8 @@ import Wheather from './weather.model';
 import config from '../shared/config';
 import { WeatherRepository } from './weather.repository';
 import { COORDINATES_MARGIN } from './weather.constants';
+import { Coordinates } from 'src/shared/interfaces/coordinates.interface';
+import { BadHourlyFormatException } from './exceptions/bad-hourly-format.exception';
 
 export class WeatherService {
   constructor(
@@ -53,5 +55,43 @@ export class WeatherService {
       weather,
       options,
     );
+  }
+
+  isValidHour(hour: number): boolean {
+    const isNull = hour === null;
+    const isnan = isNaN(hour);
+    const isDecimal = hour % 1 != 0;
+    const isInRange = hour >= 0 && hour <= 23;
+
+    return !isNull && !isnan && !isDecimal && isInRange;
+  }
+
+  // TODO refactor: move to other file
+  getTimestampForTodayAt(hour: number): number {
+    const today = new Date();
+    const date = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      hour,
+    );
+    return date.getTime() / 1000;
+  }
+
+  getOneHourly(coordinates: Coordinates, timestamp: number) {
+    const now = new Date().getTime();
+    return this.weatherRepository.findOne(
+      {
+        expirationDate: { $gte: now },
+        location: {
+          $near: {
+            $geometry: { type: 'Point', coordinates },
+            $minDistance: 0,
+            $maxDistance: COORDINATES_MARGIN,
+          },
+        },
+      },
+      { projection: { hourly: { $elemMatch: { dt: timestamp } } } },
+    ) as Promise<Wheather>;
   }
 }
