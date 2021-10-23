@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 import app from './app';
-
-const PORT = 1284;
+import config from './shared/config';
 
 function bootstrap() {
-  app.listen(PORT, () => {
-    console.log('Server running on port', PORT);
+  const { APP_PORT } = config;
+  app.listen(APP_PORT, () => {
+    console.log('Server running on port', APP_PORT);
   });
 }
 
