@@ -17,7 +17,7 @@ export class WeatherService {
   getWeather(lat: number, lon: number): Promise<any> {
     console.log('API');
     const API_KEY = config.OPEN_WEATHER_KEY;
-    const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,alerts&appid=${API_KEY}`;
+    const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,alerts&units=metric&appid=${API_KEY}`;
     return this.http
       .get(url)
       .then((response: { data: string }) => {
