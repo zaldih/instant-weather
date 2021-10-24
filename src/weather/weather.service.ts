@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { HttpService } from '../shared/services/http.service';
 import { NoDataException } from './exceptions/no-data.exception';
-import Wheather from './weather.model';
+import Weather from './weather.model';
 import config from '../shared/config';
 import { WeatherRepository } from './weather.repository';
 import { COORDINATES_MARGIN } from './weather.constants';
@@ -21,7 +21,7 @@ export class WeatherService {
     return this.http
       .get(url)
       .then((response: { data: string }) => {
-        const weather = plainToClass(Wheather, response.data);
+        const weather = plainToClass(Weather, response.data);
         const { lat, lon } = response.data as any;
         // TODO create plaintoclass transformer
         weather.setCoordinates(lat, lon);
@@ -32,7 +32,7 @@ export class WeatherService {
       });
   }
 
-  getWetherFromCache(lat: number, lon: number): Promise<Wheather> {
+  getWetherFromCache(lat: number, lon: number): Promise<Weather> {
     console.log('CACHE');
     return this.weatherRepository.findOne({
       location: {
@@ -42,10 +42,10 @@ export class WeatherService {
           $maxDistance: COORDINATES_MARGIN,
         },
       },
-    }) as Promise<Wheather>;
+    }) as Promise<Weather>;
   }
 
-  cacheWeather(weather: Wheather) {
+  cacheWeather(weather: Weather) {
     // const { lat, lon } = weather.location;
     const options = { upsert: true };
     return this.weatherRepository.updateOne(
@@ -88,6 +88,6 @@ export class WeatherService {
         },
       },
       { projection: { hourly: { $elemMatch: { dt: timestamp } } } },
-    ) as Promise<Wheather>;
+    ) as Promise<Weather>;
   }
 }

@@ -4,7 +4,7 @@ import {
 } from 'src/shared/interfaces/coordinates.interface';
 import { CACHE_TIME } from './weather.constants';
 
-export default class Wheather {
+export default class Weather {
   timestamp: number;
   expirationDate: number;
   location: GeoJson;

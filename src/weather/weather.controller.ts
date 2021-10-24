@@ -5,7 +5,7 @@ import { Controller } from '../shared/interfaces/controller.interface';
 import { BadHourlyFormatException } from './exceptions/bad-hourly-format.exception';
 import { NoDataHourlyException } from './exceptions/no-data-hourly.exception';
 import { WeatherDto } from './weather.dto';
-import Wheather from './weather.model';
+import Weather from './weather.model';
 
 import { WeatherService } from './weather.service';
 
@@ -65,7 +65,7 @@ export class WeatherController implements Controller {
   private async getAndUpdateWeather(
     lat: number,
     lon: number,
-  ): Promise<Wheather> {
+  ): Promise<Weather> {
     let weather = await this.weatherService.getWetherFromCache(lat, lon);
     const shouldUpdateCache = !weather || weather.isExpired();
     if (shouldUpdateCache) {

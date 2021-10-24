@@ -1,7 +1,7 @@
 import { BaseRepository } from '../shared/database/base.repository';
-import Wheather from './weather.model';
+import Weather from './weather.model';
 
-export class WeatherRepository extends BaseRepository<Wheather> {
+export class WeatherRepository extends BaseRepository<Weather> {
   constructor() {
     super('weather');
     this.createIndex();
