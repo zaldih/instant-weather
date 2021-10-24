@@ -15,7 +15,7 @@ services:
     restart: on-failure
     env_file: ./.env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: toor
+      MONGO_INITDB_ROOT_USERNAME: $DB_USER
+      MONGO_INITDB_ROOT_PASSWORD: $DB_PASS
     volumes:
       - /data/db:/data/db
