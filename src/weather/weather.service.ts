@@ -32,17 +32,22 @@ export class WeatherService {
       });
   }
 
-  getWetherFromCache(lat: number, lon: number): Promise<Weather> {
+  getWetherFromCache(lat: number, lon: number) {
     console.log('CACHE');
-    return this.weatherRepository.findOne({
-      location: {
-        $near: {
-          $geometry: { type: 'Point', coordinates: [lon, lat] },
-          $minDistance: 0,
-          $maxDistance: COORDINATES_MARGIN,
+    return this.weatherRepository
+      .findOne({
+        location: {
+          $near: {
+            $geometry: { type: 'Point', coordinates: [lon, lat] },
+            $minDistance: 0,
+            $maxDistance: COORDINATES_MARGIN,
+          },
         },
-      },
-    }) as Promise<Weather>;
+      })
+      .then((result) => {
+        if (!result) return;
+        return plainToClass(Weather, result);
+      });
   }
 
   cacheWeather(weather: Weather) {
