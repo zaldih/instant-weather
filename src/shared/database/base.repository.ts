@@ -4,48 +4,57 @@ import {
   UpdateOptions,
   Document,
   FindOptions,
+  InsertOneResult,
+  UpdateResult,
+  WithId,
+  OptionalUnlessRequiredId,
 } from 'mongodb';
-const db = require('./db.controller');
-export abstract class BaseRepository<T> {
-  protected collection: Collection;
+import db from './db.controller';
+
+export abstract class BaseRepository<T extends Document> {
+  protected collection: Collection<T>;
 
   constructor(collectionName: string) {
-    this.collection = db.connection.collection(collectionName);
+    this.collection = db.connection.collection<T>(collectionName);
   }
 
-  insertOne(item: T) {
-    return new Promise((resolve, reject) => {
-      this.collection.insertOne(item, (err, res) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(res);
-      });
-    });
+  async insertOne(
+    item: OptionalUnlessRequiredId<T>,
+  ): Promise<InsertOneResult<T>> {
+    try {
+      const res = await this.collection.insertOne(item);
+      return res;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  updateOne(where: Partial<T>, set: Partial<T>, options: UpdateOptions) {
-    return new Promise((resolve, reject) => {
-      this.collection.updateOne(where, { $set: set }, options, (err, res) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(res);
-      });
-    });
+  async updateOne(
+    where: Filter<T>,
+    set: Partial<T>,
+    options?: UpdateOptions,
+  ): Promise<UpdateResult> {
+    try {
+      const res = await this.collection.updateOne(
+        where,
+        { $set: set },
+        options,
+      );
+      return res;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  findOne(query: Filter<Document>, options?: FindOptions) {
-    return new Promise((resolve, reject) => {
-      this.collection.findOne(query, options, (err, result) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(result);
-      });
-    });
+  async findOne(
+    query: Filter<T>,
+    options?: FindOptions<T>,
+  ): Promise<WithId<T> | null> {
+    try {
+      const result = await this.collection.findOne(query, options);
+      return result;
+    } catch (err) {
+      throw err;
+    }
   }
 }

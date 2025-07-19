@@ -2,35 +2,41 @@ import { Db, MongoClient } from 'mongodb';
 import config from '../config';
 
 class DbController {
-  connection: Db;
-  private client: MongoClient;
+  public connection!: Db;
+  private client!: MongoClient;
 
   constructor() {}
 
-  connect() {
-    return new Promise((resolve, reject) => {
-      MongoClient.connect(this.getConnectionUrl(), async (err, client) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        // await client.db(database);
-        this.client = client;
-        this.connection = client.db(config.DB_NAME);
-        resolve(client);
-      });
-    });
+  async connect(): Promise<MongoClient> {
+    try {
+      const connectionUrl = this.getConnectionUrl();
+      this.client = await MongoClient.connect(connectionUrl);
+      this.connection = this.client.db(config.DB_NAME);
+      console.log('Successfully connected to MongoDB!');
+      return this.client;
+    } catch (err) {
+      console.error('Failed to connect to MongoDB:', err);
+      throw err;
+    }
   }
 
-  disconnect() {
-    if (!this.client) return;
-    return this.client.close();
+  async disconnect(): Promise<void> {
+    if (this.client && this.client.close) {
+      await this.client.close();
+      console.log('Disconnected from MongoDB.');
+    } else {
+      console.warn('MongoDB client was not initialized or already closed.');
+    }
   }
 
   private getConnectionUrl(): string {
-    const { DB_HOST, DB_PORT, DB_USER, DB_PASS } = config;
-    return `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/`;
+    const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = config;
+
+    if (DB_USER && DB_PASS) {
+      return `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+    }
+    return `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
   }
 }
 
-module.exports = new DbController();
+export default new DbController();

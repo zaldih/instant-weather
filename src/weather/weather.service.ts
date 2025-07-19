@@ -6,7 +6,6 @@ import config from '../shared/config';
 import { WeatherRepository } from './weather.repository';
 import { COORDINATES_MARGIN } from './weather.constants';
 import { Coordinates } from 'src/shared/interfaces/coordinates.interface';
-import { BadHourlyFormatException } from './exceptions/bad-hourly-format.exception';
 
 export class WeatherService {
   constructor(
@@ -81,8 +80,11 @@ export class WeatherService {
     return date.getTime() / 1000;
   }
 
-  getOneHourly(coordinates: Coordinates, timestamp: number) {
-    return this.weatherRepository.findOne(
+  async getOneHourly(
+    coordinates: Coordinates,
+    timestamp: number,
+  ): Promise<Weather> {
+    const result = await this.weatherRepository.findOne(
       {
         location: {
           $near: {
@@ -93,6 +95,8 @@ export class WeatherService {
         },
       },
       { projection: { hourly: { $elemMatch: { dt: timestamp } } } },
-    ) as Promise<Weather>;
+    );
+    if (!result) return null;
+    return plainToClass(Weather, result);
   }
 }
